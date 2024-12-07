@@ -1,5 +1,5 @@
 package:
-  name: libmamba
+  name: mamba-package
   version: 2.0.4
   epoch: 0
   description: Cross-Platform Package Manager
@@ -20,6 +20,7 @@ environment:
       - doctest
       - fmt-dev
       - libarchive-dev
+      - libmamba-dev
       - libsolv-dev
       - make
       - nlohmann-json
@@ -42,16 +43,12 @@ pipeline:
     with:
       expected-commit: c809abcba67fa3a94e205552ac1a6388c1736934
       repository: https://github.com/mamba-org/mamba
-      tag: libmamba-${{package.version}}
-
-  - uses: patch
-    with:
-      patches: support-shared-libs.patch
+      tag: mamba-${{package.version}}
 
   - uses: cmake/configure
     with:
       opts: |
-        -DBUILD_LIBMAMBA="ON" \
+        -DBUILD_LIBMAMBA="OFF" \
         -DBUILD_SHARED="ON" \
         -DBUILD_LIBMAMBAPY="OFF" \
         -DBUILD_MICROMAMBA="OFF" \
@@ -64,14 +61,19 @@ pipeline:
 
   - uses: strip
 
-subpackages:
-  - name: libmamba-dev
-    pipeline:
-      - uses: split/dev
-
 update:
   enabled: true
   github:
     identifier: mamba-org/mamba
-    strip-prefix: libmamba-
-    tag-filter-prefix: libmamba-
+    strip-prefix: mamba-
+    tag-filter-prefix: mamba-
+
+test:
+  environment:
+    contents:
+      packages:
+        - mamba-package
+  pipeline:
+    - runs: |
+        mamba-package --help
+        
