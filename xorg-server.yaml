@@ -117,8 +117,42 @@ subpackages:
       - uses: git-checkout
         with:
           repository: https://salsa.debian.org/xorg-team/xserver/xorg-server
-          branch: debian-unstable # reason we use branch instead of tag: https://github.com/wolfi-dev/os/pull/13691#issue-2154225731
-          expected-commit: 4766ab7d1cf447c173564ed8a6c74318f4189fa8
+          tag: debian/2%21.1.15-2
+          expected-commit: 4c5d2ac2b36d6da2a5b0f5b87ad90f5409d1532d
+        # This repo has a history of not pushing tags, see:
+        #   https://github.com/wolfi-dev/os/pull/13691#issue-2154225731
+        # But the subtree of code we use rarely changes. The following
+        # is meant as a trip-wire to detect when it does.
+        #
+        # - If the detected changes are in a tagged release, simply bump the
+        #   above tag/commit.
+        # - If the changes were released but the tag was not pushed,
+        #   add a 'cherry-picks: <tag>..<hash-missing-tag>' to the above so
+        #   that the test below passes. Please remind upstream to push the tag.
+        # - If the changes were not released yet, decide if you think we
+        #   should pull them.
+        #   - If yes, cherry-pick them above and below.
+        #   - If no, you can make this test pass by adding a patch to the
+        #     checkout below that reverts those changes. In that case, please
+        #     also add an expected-commit for the branch below so we will
+        #     notice when it moves forward.
+      - uses: git-checkout
+        with:
+          repository: https://salsa.debian.org/xorg-team/xserver/xorg-server
+          branch: debian-unstable
+          destination: debian-freshness-check
+      - runs: |
+          if diff -urpN debian/local debian-freshness-check/debian/local; then
+            # The code we use hasn't changed
+            exit 0
+          fi
+          if diff -u debian/changelog debian-freshness-check/debian/changelog; then
+            # There are changes, but they are still pending release.
+            exit 0
+          fi
+          echo "*** Possible missing upstream tag. Please see the code block in xorg-server.yaml for how to proceed ***"
+          exit 1
+
       - working-directory: debian/local
         pipeline:
           - runs: |
