@@ -1,7 +1,7 @@
 package:
   name: cgal
-  version: 5.6.2
-  epoch: 0
+  version: 6.0.1
+  epoch: 2
   description: Efficient and reliable geometric algorithms as C++ library
   copyright:
     - license: GPL-3.0-or-later custom
@@ -11,26 +11,20 @@ environment:
     packages:
       - build-base
       - busybox
+      - cmake
 
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 6065757250ce59d3ac86a92c3412266aabb6fbd7
+      expected-commit: 50cfbde3b84dbeae8338268db2d78fe4fcb522de
       repository: https://github.com/CGAL/cgal
       tag: v${{package.version}}
+      destination: CGAL-${{package.version}}
 
-  - uses: cmake/configure
-
-  - uses: cmake/build
-
-  - uses: cmake/install
-
-  - uses: strip
-
-  - runs: |
-      mkdir -p ${{targets.contextdir}}/usr/bin/
-      cp Scripts/scripts/cgal_create_CMakeLists ${{targets.contextdir}}/usr/bin/cgal_create_CMakeLists
-      cp Scripts/scripts/cgal_create_cmake_script ${{targets.contextdir}}/usr/bin/cgal_create_cmake_script
+  - working-directory: /home/build
+    pipeline:
+      - runs: cmake -B build -S CGAL-${{package.version}} -W no-dev -DCMAKE_INSTALL_PREFIX=/usr
+      - runs: DESTDIR="${{targets.contextdir}}" cmake --install build
 
 subpackages:
   - name: cgal-dev
