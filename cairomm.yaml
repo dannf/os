@@ -1,0 +1,49 @@
+package:
+  name: cairomm
+  version: 1.18.0
+  epoch: 0
+  description: This library provides a C++ interface to cairo.
+  copyright:
+    - license: LGPL-2.1-or-later
+
+environment:
+  contents:
+    packages:
+      - boost-dev
+      - build-base
+      - busybox
+      - cairo-dev
+      - cmake
+      - doxygen
+      - libsigc++-dev
+      - meson
+      - mm-common
+      - mm-common-dev
+      - pkgconf-dev
+      - python3
+
+pipeline:
+  - uses: git-checkout
+    with:
+      # Note, the original location is deprecated, this is a maintained fork
+      repository: https://gitlab.freedesktop.org/cairo/cairomm
+      tag: ${{package.version}}
+      expected-commit: e0bad547705348657d09db4c9375833d8890cf54
+
+  - uses: meson/configure
+
+  - uses: meson/compile
+
+  - uses: meson/install
+
+  - uses: strip
+
+subpackages:
+  - name: ${{package.name}}-dev
+    pipeline:
+      - uses: split/dev
+    description: ${{package.name}} dev
+
+update:
+  enabled: true
+  git: {}

@@ -12,6 +12,8 @@ environment:
       - build-base
       - busybox
       - cmake
+      - eigen-dev
+      - mpfr-dev
 
 pipeline:
   - uses: git-checkout

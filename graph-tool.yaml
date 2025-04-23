@@ -16,11 +16,15 @@ environment:
       - build-base
       - busybox
       - ca-certificates-bundle
+      - cairomm-dev
       - cgal-dev
+      - eigen-dev
       - expat-dev
       - gmp-dev
       - libtool
+      - mpfr-dev
       - pkgconf-dev
+      - py3-numpy
       - python3-dev
 
 pipeline:
