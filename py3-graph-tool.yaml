@@ -1,8 +1,14 @@
 package:
-  name: graph-tool
+  name: py3-graph-tool
   version: 2.97
   epoch: 0
   description: graph-tool is an efficient Python module for manipulation and statistical analysis of graphs (a.k.a. networks).
+  dependencies:
+    provides:
+      - graph-tool=${{package.full-version}}
+    runtime:
+      - py3-numpy
+      - py3-scipy
   copyright:
     - license: GPL-3.0-only
 
@@ -31,6 +37,7 @@ environment:
       - py3-numpy
       - python3-dev
       - sparsehash-dev
+      - zlib-dev
   environment:
     CAIROMM_LIBS: "/usr/lib/cairomm-1.16"
     CAIROMM_CFLAGS: "-Wno-error"
@@ -73,6 +80,13 @@ subpackages:
   - name: ${{package.name}}-doc
     pipeline:
       - uses: split/manpages
+      - runs: |
+          mkdir -p "${{targets.contextdir}}"/usr/share
+          mv "${{targets.destdir}}"/usr/share/doc "${{targets.contextdir}}"/usr/share/
+    description: ${{package.name}} manpages
+    test:
+      pipeline:
+        - uses: test/docs
 
   - name: ${{package.name}}-dev
     pipeline:
