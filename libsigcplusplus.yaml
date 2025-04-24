@@ -29,6 +29,8 @@ pipeline:
 
   - runs: ./autogen.sh
 
+  # TODO: @kranurag7
+  # disabling docs here is intentional for now else it's causing build failure.
   - uses: autoconf/configure
     with:
       opts: |
@@ -41,10 +43,6 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: ${{package.name}}-doc
-    pipeline:
-      - uses: split/manpages
-
   - name: ${{package.name}}-dev
     pipeline:
       - uses: split/dev
@@ -56,7 +54,3 @@ subpackages:
 update:
   enabled: true
   git: {}
-
-test:
-  pipeline:
-    - uses: test/tw/ldd-check

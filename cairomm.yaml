@@ -39,12 +39,36 @@ pipeline:
 
 subpackages:
   - name: ${{package.name}}-dev
+    dependencies:
+      runtime:
+        - libsigcplusplus-dev
+        - cairo-dev
     options:
       no-depends: true
     pipeline:
       - uses: split/dev
     description: ${{package.name}} dev
+    test:
+      pipeline:
+        - uses: test/tw/ldd-check
+        - uses: test/pkgconf
+
+  - name: ${{package.name}}-doc
+    pipeline:
+      - uses: split/manpages
+      - runs: |
+          mkdir -p "${{targets.contextdir}}"/usr/share
+          mv "${{targets.destdir}}"/usr/share/doc "${{targets.contextdir}}"/usr/share/
+          mv "${{targets.destdir}}"/usr/share/devhelp "${{targets.contextdir}}"/usr/share/
+    description: ${{package.name}} manpages
+    test:
+      pipeline:
+        - uses: test/docs
 
 update:
   enabled: true
   git: {}
+
+test:
+  pipeline:
+    - uses: test/tw/ldd-check

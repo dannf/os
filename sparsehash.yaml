@@ -43,7 +43,13 @@ subpackages:
   - name: ${{package.name}}-doc
     pipeline:
       - uses: split/manpages
+      - runs: |
+          mkdir -p "${{targets.contextdir}}"/usr/share
+          mv "${{targets.destdir}}"/usr/share/doc "${{targets.contextdir}}"/usr/share/
     description: ${{package.name}} manpages
+    test:
+      pipeline:
+        - uses: test/docs
 
 update:
   enabled: true
