@@ -4,7 +4,10 @@ package:
   epoch: 2
   description: Efficient and reliable geometric algorithms as C++ library
   copyright:
-    - license: GPL-3.0-or-later custom
+    - license: GPL-3.0-or-later
+    - license: BSL-1.0
+    - license: LGPL-3.0-or-later
+    - license: MIT
 
 environment:
   contents:
@@ -28,6 +31,10 @@ pipeline:
       - runs: cmake -B build -S CGAL-${{package.version}} -W no-dev -DCMAKE_INSTALL_PREFIX=/usr
       - runs: DESTDIR="${{targets.contextdir}}" cmake --install build
 
+  - runs: rm -rf ${{targets.contextdir}}/usr/share/doc/ # docs don't have a OSI approved license.
+
+  - uses: strip
+
 subpackages:
   - name: cgal-dev
     pipeline:
@@ -40,3 +47,8 @@ subpackages:
       pipeline:
         - uses: test/pkgconf
         - uses: test/tw/ldd-check
+
+update:
+  enabled: true
+  git:
+    strip-prefix: v

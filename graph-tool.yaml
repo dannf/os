@@ -81,3 +81,8 @@ subpackages:
       pipeline:
         - uses: test/pkgconf
         - uses: test/tw/ldd-check
+
+update:
+  enabled: true
+  git:
+    strip-prefix: release-

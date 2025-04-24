@@ -44,3 +44,8 @@ subpackages:
     pipeline:
       - uses: split/manpages
     description: ${{package.name}} manpages
+
+update:
+  enabled: true
+  git:
+    strip-prefix: sparsehash-
