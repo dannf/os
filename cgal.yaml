@@ -30,8 +30,13 @@ pipeline:
     pipeline:
       - runs: cmake -B build -S CGAL-${{package.version}} -W no-dev -DCMAKE_INSTALL_PREFIX=/usr
       - runs: DESTDIR="${{targets.contextdir}}" cmake --install build
+      - runs: |
+          mkdir -p ${{targets.contextdir}}/usr/
+          mv ${{targets.contextdir}}/usr/lib64 ${{targets.contextdir}}/usr/lib
 
   - runs: rm -rf ${{targets.contextdir}}/usr/share/doc/ # docs don't have a OSI approved license.
+
+  - runs: rm -rf ${{targets.contextdir}}/usr/share/man/ # docs don't have a OSI approved license.
 
   - uses: strip
 
@@ -46,7 +51,7 @@ subpackages:
     test:
       pipeline:
         - uses: test/pkgconf
-        - uses: test/tw/ldd-check
+        - runs: stat /usr/include/CGAL/*.h
 
 update:
   enabled: true
