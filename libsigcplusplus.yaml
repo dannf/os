@@ -55,8 +55,7 @@ subpackages:
 
 update:
   enabled: true
-  release-monitor:
-    identifier: 13299
+  git: {}
 
 test:
   pipeline:
