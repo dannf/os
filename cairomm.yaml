@@ -15,7 +15,7 @@ environment:
       - cairo-dev
       - cmake
       - doxygen
-      - libsigc++-dev
+      - libsigcplusplus-dev
       - meson
       - mm-common
       - mm-common-dev
@@ -25,7 +25,6 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      # Note, the original location is deprecated, this is a maintained fork
       repository: https://gitlab.freedesktop.org/cairo/cairomm
       tag: ${{package.version}}
       expected-commit: e0bad547705348657d09db4c9375833d8890cf54
@@ -40,6 +39,8 @@ pipeline:
 
 subpackages:
   - name: ${{package.name}}-dev
+    options:
+      no-depends: true
     pipeline:
       - uses: split/dev
     description: ${{package.name}} dev

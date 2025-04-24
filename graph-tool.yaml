@@ -16,16 +16,24 @@ environment:
       - build-base
       - busybox
       - ca-certificates-bundle
+      - cairo-dev
       - cairomm-dev
       - cgal-dev
       - eigen-dev
       - expat-dev
+      - freetype-dev
       - gmp-dev
+      - libsigcplusplus-dev
       - libtool
       - mpfr-dev
       - pkgconf-dev
+      - py3-cairo
       - py3-numpy
       - python3-dev
+      - sparsehash-dev
+  environment:
+    CAIROMM_LIBS: "/usr/lib/cairomm-1.16"
+    CAIROMM_CFLAGS: "-Wno-error"
 
 pipeline:
   - uses: git-checkout
@@ -39,12 +47,23 @@ pipeline:
       CXXFLAGS=${CXXFLAGS/-Wp,-D_GLIBCXX_ASSERTIONS/}
       export CXXFLAGS="$CXXFLAGS -O3"
 
+  - runs: |
+      cp -r /usr/include/cairo/* /usr/lib/python3.13/site-packages/cairo/include/
+      cp -r /usr/include/freetype2/* /usr/lib/python3.13/site-packages/cairo/include/
+
   - uses: autoconf/configure
     with:
       opts: |
-        --enable-openmp
+        --enable-openmp \
+        --includedir=/usr/lib/cairomm-1.16
 
-  - uses: autoconf/make
+  - runs: |
+      ln -s /usr/lib/cairomm-1.16/include/cairommconfig.h /usr/include/cairommconfig.h
+      ln -s /usr/include/cairomm-1.16/cairomm/ /usr/include/cairomm
+      ln -s /usr/lib/sigc++-3.0/include/sigc++config.h /usr/include/sigc++config.h
+      ln -s /usr/include/sigc++-3.0/sigc++/ /usr/include/sigc++
+      export CPPFLAGS="$CPPFLAGS -I/usr/lib/cairomm-1.16/include -I/usr/include/cairomm-1.16/cairomm/ -I/usr/include/sigc++-3.0/sigc++/"
+      make -C . -j$(nproc) V=1
 
   - uses: autoconf/make-install
 
