@@ -40,11 +40,3 @@ subpackages:
       pipeline:
         - uses: test/pkgconf
         - uses: test/tw/ldd-check
-
-  - name: cgal-doc
-    pipeline:
-      - uses: split/manpages
-    description: cgal manpages
-    test:
-      pipeline:
-        - uses: test/docs
