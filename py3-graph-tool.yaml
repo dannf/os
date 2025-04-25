@@ -90,6 +90,12 @@ subpackages:
 
       - uses: autoconf/make-install
 
+      - name: save docs for -docs package
+        runs: |
+          rm -rf docs.save
+          mkdir -p docs.save/usr/share
+          mv ${{targets.contextdir}}/usr/share/doc docs.save/usr/share
+
       - uses: strip
     test:
       pipeline:
@@ -116,7 +122,7 @@ subpackages:
       - uses: split/manpages
       - runs: |
           mkdir -p "${{targets.contextdir}}"/usr/share
-          mv "${{targets.destdir}}"/usr/share/doc "${{targets.contextdir}}"/usr/share/
+          mv docs.save/usr/share/doc "${{targets.contextdir}}"/usr/share/
     description: ${{package.name}} manpages
     test:
       pipeline:
