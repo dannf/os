@@ -3,14 +3,18 @@ package:
   version: 2.97
   epoch: 0
   description: graph-tool is an efficient Python module for manipulation and statistical analysis of graphs (a.k.a. networks).
-  dependencies:
-    provides:
-      - graph-tool=${{package.full-version}}
-    runtime:
-      - py3-numpy
-      - py3-scipy
   copyright:
     - license: GPL-3.0-only
+
+vars:
+  pypi-package: graph-tool
+  import: graph_tool
+
+data:
+  # TODO: add other supported versions
+  - name: py-versions
+    items:
+      3.13:
 
 environment:
   contents:
@@ -33,9 +37,9 @@ environment:
       - libtool
       - mpfr-dev
       - pkgconf-dev
-      - py3-cairo
-      - py3-numpy
-      - python3-dev
+      - py3.13-cairo
+      - py3.13-numpy
+      - py3.13-build-base-dev
       - sparsehash-dev
       - zlib-dev
   environment:
@@ -49,34 +53,64 @@ pipeline:
       tag: release-${{package.version}}
       expected-commit: cd15650ec9fb6807b4536b523a059354f231fcb1
 
-  - runs: |
-      ./autogen.sh
-      CXXFLAGS=${CXXFLAGS/-Wp,-D_GLIBCXX_ASSERTIONS/}
-      export CXXFLAGS="$CXXFLAGS -O3"
-
-  - runs: |
-      cp -r /usr/include/cairo/* /usr/lib/python3.13/site-packages/cairo/include/
-      cp -r /usr/include/freetype2/* /usr/lib/python3.13/site-packages/cairo/include/
-
-  - uses: autoconf/configure
-    with:
-      opts: |
-        --enable-openmp \
-        --includedir=/usr/lib/cairomm-1.16
-
-  - runs: |
-      ln -s /usr/lib/cairomm-1.16/include/cairommconfig.h /usr/include/cairommconfig.h
-      ln -s /usr/include/cairomm-1.16/cairomm/ /usr/include/cairomm
-      ln -s /usr/lib/sigc++-3.0/include/sigc++config.h /usr/include/sigc++config.h
-      ln -s /usr/include/sigc++-3.0/sigc++/ /usr/include/sigc++
-      export CPPFLAGS="$CPPFLAGS -I/usr/lib/cairomm-1.16/include -I/usr/include/cairomm-1.16/cairomm/ -I/usr/include/sigc++-3.0/sigc++/"
-      make -C . -j$(nproc) V=1
-
-  - uses: autoconf/make-install
-
-  - uses: strip
-
 subpackages:
+  - range: py-versions
+    name: py${{range.key}}-${{vars.pypi-package}}
+    description: python${{range.key}} version of ${{vars.pypi-package}}
+    dependencies:
+      provides:
+        - graph-tool=${{package.full-version}}
+      runtime:
+        - py${{range.key}}-numpy
+        - py${{range.key}}-scipy
+    pipeline:
+      - runs: |
+          ./autogen.sh
+          CXXFLAGS=${CXXFLAGS/-Wp,-D_GLIBCXX_ASSERTIONS/}
+          export CXXFLAGS="$CXXFLAGS -O3"
+
+      - runs: |
+          cp -r /usr/include/cairo/* /usr/lib/python${{range.key}}/site-packages/cairo/include/
+          cp -r /usr/include/freetype2/* /usr/lib/python${{range.key}}/site-packages/cairo/include/
+
+      - uses: autoconf/configure
+        with:
+          opts: |
+            --enable-openmp \
+            --includedir=/usr/lib/cairomm-1.16 \
+            PYTHON=python${{range.key}}
+
+      - runs: |
+          ln -s /usr/lib/cairomm-1.16/include/cairommconfig.h /usr/include/cairommconfig.h
+          ln -s /usr/include/cairomm-1.16/cairomm/ /usr/include/cairomm
+          ln -s /usr/lib/sigc++-3.0/include/sigc++config.h /usr/include/sigc++config.h
+          ln -s /usr/include/sigc++-3.0/sigc++/ /usr/include/sigc++
+          export CPPFLAGS="$CPPFLAGS -I/usr/lib/cairomm-1.16/include -I/usr/include/cairomm-1.16/cairomm/ -I/usr/include/sigc++-3.0/sigc++/"
+          make -C . -j16 V=1
+
+      - uses: autoconf/make-install
+
+      - uses: strip
+    test:
+      pipeline:
+        - uses: python/import
+          with:
+            python: python${{range.key}}
+            import: ${{vars.import}}
+
+  - name: py3-supported-${{vars.pypi-package}}
+    description: meta package providing ${{vars.pypi-package}} for supported python versions.
+    dependencies:
+      runtime:
+        # TODO: Add other python versions
+        - py3.13-${{vars.pypi-package}}
+    test:
+      pipeline:
+        - uses: python/import
+          with:
+            python: python3.13
+            import: ${{vars.import}}
+
   - name: ${{package.name}}-doc
     pipeline:
       - uses: split/manpages
@@ -100,3 +134,7 @@ update:
   enabled: true
   git:
     strip-prefix: release-
+
+test:
+  pipeline:
+    - uses: test/emptypackage
