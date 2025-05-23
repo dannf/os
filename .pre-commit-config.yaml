@@ -17,3 +17,9 @@ repos:
     hooks:
       - id: yam
         files: ^[^/]+\.yaml$
+  - repo: https://github.com/chainguard-dev/pre-commit-hooks
+    rev: c1d84c35a1824a9e1a4d2395ffa3e81bf77dd8f0
+    hooks:
+      - id: shellcheck-run-steps
+        files: ^[^\./]+\.yaml$
+        args: [-S, error]
