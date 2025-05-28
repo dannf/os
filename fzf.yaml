@@ -1,7 +1,7 @@
 package:
   name: fzf
   version: "0.62.0"
-  epoch: 0
+  epoch: 1
   description: A command-line fuzzy finder
   copyright:
     - license: MIT
@@ -51,16 +51,16 @@ test:
         fzf --help
     - name: "Test basic fuzzy finding"
       runs: |
-        echo -e "apple\nbanana\ncherry" | fzf --filter=ana
+        printf "apple\nbanana\ncherry\n" | fzf --filter=ana
     - name: "Test multi-select mode"
       runs: |
-        echo -e "red\ngreen\nblue\nyellow" | fzf -m --filter=e | wc -l | grep -q "4"
+        printf "red\ngreen\nblue\nyellow\n" | fzf -m --filter=e | wc -l | grep -q "4"
     - name: "Test with a larger dataset"
       runs: |
         find /usr -type f | fzf --filter="/bin" | grep -q "bin"
     - name: "Test preview functionality"
       runs: |
-        echo -e "file1\nfile2\nfile3" | fzf --preview 'echo "Preview: {}"' --filter=file2
+        printf "file1\nfile2\nfile3\n" | fzf --preview 'echo "Preview: {}"' --filter=file2
     - name: "Test with environment variables"
       runs: |
         export FZF_DEFAULT_OPTS="--reverse --border"
