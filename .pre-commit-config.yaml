@@ -22,4 +22,4 @@ repos:
     hooks:
       - id: shellcheck-run-steps
         files: ^[^\./]+\.yaml$
-        args: [-S, error]
+        args: [--, -S, error]

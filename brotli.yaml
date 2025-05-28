@@ -1,7 +1,7 @@
 package:
   name: brotli
   version: 1.1.0
-  epoch: 4
+  epoch: 5
   description: "a generic lossless compression algorithm"
   copyright:
     - license: MIT
@@ -97,7 +97,7 @@ test:
         test -f original.txt.br
         rm original.txt  # Remove original before decompressing
         brotli --decompress original.txt.br
-        diff original.txt <(echo "Hello, Brotli compression test")
+        echo "Hello, Brotli compression test" | diff original.txt
     - name: "Compression levels test"
       runs: |
         echo "Testing different compression levels" > level_test.txt
@@ -113,7 +113,7 @@ test:
       runs: |
         echo "Testing stream compression" | brotli > stream.br
         brotli --decompress < stream.br > stream_decoded
-        diff stream_decoded <(echo "Testing stream compression")
+        echo "Testing stream compression" | diff stream_decoded
     - name: "Input validation test"
       runs: |
         # Should fail with non-existent input
