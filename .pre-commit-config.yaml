@@ -16,7 +16,7 @@ repos:
     rev: fdb5b8c7c09513ca1ed6a88dba5951e4e52be1a7
     hooks:
       - id: yam
-        files: ^[^/]+\.yaml$
+        files: ^[^\./]+\.yaml$
   - repo: https://github.com/chainguard-dev/pre-commit-hooks
     rev: c1d84c35a1824a9e1a4d2395ffa3e81bf77dd8f0
     hooks:
