@@ -2,7 +2,7 @@
 package:
   name: cryptsetup
   version: 2.7.5
-  epoch: 21
+  epoch: 22
   description: Userspace setup tool for transparent encryption of block devices using the Linux 2.6 cryptoapi
   copyright:
     - license: GPL-2.0-or-later WITH cryptsetup-OpenSSL-exception
@@ -132,7 +132,7 @@ test:
     - name: "Test adding a LUKS key"
       runs: |
         # Add a new key to the existing container
-        echo -e "testpassword\nnewpassword" | cryptsetup luksAddKey container
+        printf "testpassword\nnewpassword\n" | cryptsetup luksAddKey container
 
         # Verify the new key slot was added
         cryptsetup luksDump container
