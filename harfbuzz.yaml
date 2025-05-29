@@ -1,7 +1,7 @@
 package:
   name: harfbuzz
   version: "11.2.1"
-  epoch: 0
+  epoch: 1
   description: Text shaping library
   copyright:
     - license: MIT
@@ -131,13 +131,13 @@ test:
                 --output-format=ansi
     - name: "Test RTL text shaping"
       runs: |
-        echo -e "\u0645\u0631\u062D\u0628\u0627" | \
+        printf "\u0645\u0631\u062D\u0628\u0627\n" | \
         hb-view --font-file=/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf \
                 --direction=rtl \
                 --output-format=ansi
     - name: "Test complex script shaping"
       runs: |
-        echo -e "\u0909\u092A\u0915\u0930\u0923" | \
+        printf "\u0909\u092A\u0915\u0930\u0923\n" | \
         hb-view --font-file=/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf \
                 --features="+liga,+kern" \
                 --output-format=ansi
