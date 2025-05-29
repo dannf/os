@@ -3,7 +3,7 @@ package:
   name: ingress-nginx-controller-1.12
   version: 1.12.2
   # There are manual changes to review between each package update. See 'vars:' section
-  epoch: 0
+  epoch: 1
   description: "Ingress-NGINX Controller for Kubernetes"
   copyright:
     - license: Apache-2.0
@@ -370,7 +370,7 @@ pipeline:
 
       cd "$BUILD_PATH/nginx-${{vars.NGINX_VERSION}}"
 
-      for p in $(ls $BUILD_PATH/images/nginx-1.25/rootfs/patches/*.patch); do
+      for p in "$BUILD_PATH/images/nginx-1.25/rootfs/patches/"*.patch; do
         echo "Patching $p..."
         patch -p1 $p
       done
