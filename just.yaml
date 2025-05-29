@@ -1,7 +1,7 @@
 package:
   name: just
   version: "1.40.0"
-  epoch: 0
+  epoch: 1
   description: "just is a handy way to save and run project-specific commands."
   copyright:
     - license: CC0-1.0
@@ -44,12 +44,12 @@ test:
         just --help
     - name: Basic Functionality Test
       runs: |
-        echo -e "default:\n  touch it-worked" > justfile
+        printf "default:\n  touch it-worked\n" > justfile
         just
         [ -f it-worked ]
     - name: Test Recipe Listing
       runs: |
-        echo -e "recipe1:\n  echo recipe1\n\nrecipe2:\n  echo recipe2" > justfile
+        printf "recipe1:\n  echo recipe1\n\nrecipe2:\n  echo recipe2\n" > justfile
         just --list | grep -q recipe1
         just --list | grep -q recipe2
     - name: Test Parameters
